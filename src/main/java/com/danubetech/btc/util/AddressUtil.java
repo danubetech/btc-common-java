@@ -1,5 +1,6 @@
 package com.danubetech.btc.util;
 
+import org.bitcoinj.base.Address;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
 
@@ -9,6 +10,7 @@ public class AddressUtil {
 
     public static String bitcoinUriToAddress(URI addressUri) throws BitcoinURIParseException {
         BitcoinURI bitcoinURI = addressUri == null ? null : BitcoinURI.of(addressUri.toString());
-        return bitcoinURI == null ? null : bitcoinURI.toString();
+        Address address = bitcoinURI == null ? null : bitcoinURI.getAddress();
+        return address == null ? null : address.toString();
     }
 }

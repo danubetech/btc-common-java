@@ -1,7 +1,8 @@
-package com.danubetech.btc.connection;
+package com.danubetech.btc.connection.impl;
 
-import com.danubetech.btc.records.Block;
-import com.danubetech.btc.records.Tx;
+import com.danubetech.btc.connection.BitcoinConnection;
+import com.danubetech.btc.connection.Block;
+import com.danubetech.btc.connection.Tx;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public abstract class AbstractBitcoinConnection implements BitcoinConnection {
     }
 
     @Override
-    public Block getBlockByTransaction(String txid) {
+    public Block getBlockByTransaction(Tx tx) {
         throw new RuntimeException("Not implemented");
     }
 }

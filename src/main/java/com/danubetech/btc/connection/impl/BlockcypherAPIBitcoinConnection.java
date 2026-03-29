@@ -1,5 +1,6 @@
-package com.danubetech.btc.connection;
+package com.danubetech.btc.connection.impl;
 
+import com.danubetech.btc.connection.BitcoinConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

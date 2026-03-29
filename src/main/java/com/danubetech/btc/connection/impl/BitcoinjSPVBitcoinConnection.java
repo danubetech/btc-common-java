@@ -1,6 +1,7 @@
-package com.danubetech.btc.connection;
+package com.danubetech.btc.connection.impl;
 
-import com.danubetech.btc.network.Network;
+import com.danubetech.btc.connection.BitcoinConnection;
+import com.danubetech.btc.connection.Network;
 import org.bitcoinj.kits.WalletAppKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

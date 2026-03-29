@@ -1,6 +1,6 @@
 package com.danubetech.btc.connection;
 
-import com.danubetech.btc.network.Network;
+import com.danubetech.btc.connection.impl.BitcoindRPCBitcoinConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wf.bitcoin.javabitcoindrpcclient.BitcoinJSONRPCClient;

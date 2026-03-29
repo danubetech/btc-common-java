@@ -1,10 +1,8 @@
-package com.danubetech.btc.records;
-
-import java.util.List;
+package com.danubetech.btc.connection;
 
 public record Block(
         Integer blockHeight,
         String blockHash,
         Long blockTime,
-        List<Tx> txs) {
+        Integer confirmations) {
 }

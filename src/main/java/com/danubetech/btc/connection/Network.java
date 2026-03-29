@@ -1,4 +1,4 @@
-package com.danubetech.btc.network;
+package com.danubetech.btc.connection;
 
 import org.bitcoinj.base.BitcoinNetwork;
 

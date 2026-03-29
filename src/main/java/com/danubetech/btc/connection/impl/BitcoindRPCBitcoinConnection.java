@@ -1,6 +1,10 @@
 package com.danubetech.btc.connection.impl;
 
 import com.danubetech.btc.connection.*;
+import com.danubetech.btc.connection.records.Block;
+import com.danubetech.btc.connection.records.Tx;
+import com.danubetech.btc.connection.records.TxIn;
+import com.danubetech.btc.connection.records.TxOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wf.bitcoin.javabitcoindrpcclient.BitcoinJSONRPCClient;

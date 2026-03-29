@@ -1,4 +1,4 @@
-package com.danubetech.btc.connection;
+package com.danubetech.btc.connection.records;
 
 public record TxOut(
         String txId,

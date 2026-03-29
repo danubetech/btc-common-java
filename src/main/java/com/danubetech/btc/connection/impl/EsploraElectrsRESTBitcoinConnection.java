@@ -1,20 +1,22 @@
 package com.danubetech.btc.connection.impl;
 
 import com.danubetech.btc.connection.*;
+import com.danubetech.btc.connection.records.Block;
+import com.danubetech.btc.connection.records.Tx;
+import com.danubetech.btc.connection.records.TxIn;
+import com.danubetech.btc.connection.records.TxOut;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import org.bitcoinj.base.Address;
+import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -71,6 +73,13 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		Block block = new Block(blockHeight, blockHash, blockTime, confirmations);
 		if (log.isDebugEnabled()) log.debug("getBlockByTransaction for {}: {}", tx, block);
 		return block;
+	}
+
+	@Override
+	public void broadcastRawTransaction(byte[] rawTransaction) {
+		URI apiEndpoint = URI.create(this.apiEndpointBase + "tx");
+		writeBytes(apiEndpoint, rawTransaction);
+		if (log.isDebugEnabled()) log.debug("broadcastRawTransaction: {}", Hex.encodeHexString(rawTransaction));
 	}
 
 	@Override
@@ -140,6 +149,25 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		} catch (JsonProcessingException ex) {
 			throw new RuntimeException("Cannot parse array response from " + uri + "; " + ex.getMessage(), ex);
 		}
+	}
+
+	private static void writeBytes(URI uri, byte[] bytes) {
+		HttpURLConnection connection;
+		try {
+			connection = (HttpURLConnection) uri.toURL().openConnection();
+			connection.setRequestMethod("POST");
+			connection.setDoOutput(true);
+			try (OutputStream outputStream = connection.getOutputStream()) {
+				byte[] bytesHex = Hex.encodeHexString(bytes).getBytes(StandardCharsets.UTF_8);
+				outputStream.write(bytesHex, 0, bytesHex.length);
+			}
+			int httpStatus = connection.getResponseCode();
+			if (httpStatus != HttpURLConnection.HTTP_OK) throw new IOException("Unexpected HTTP status: " + httpStatus);
+			connection.disconnect();
+		} catch (IOException ex) {
+			throw new RuntimeException("Cannot read from " + uri + "; " + ex.getMessage(), ex);
+		}
+		if (log.isDebugEnabled()) log.debug("Wrote to " + uri);
 	}
 
 	/*

@@ -1,6 +1,7 @@
 package com.danubetech.btc.connection;
 
 import org.bitcoinj.base.BitcoinNetwork;
+import org.bitcoinj.core.NetworkParameters;
 
 public enum Network {
 
@@ -77,5 +78,9 @@ public enum Network {
             case mutinynet -> BitcoinNetwork.SIGNET;
             default -> throw new IllegalArgumentException("Unknown 'network': " + this);
         };
+    }
+
+    public NetworkParameters toBitcoinjNetworkParameters() {
+        return NetworkParameters.of(toBitcoinjNetwork());
     }
 }

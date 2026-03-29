@@ -1,6 +1,7 @@
 package com.danubetech.btc.connection.impl;
 
-import com.danubetech.btc.connection.*;
+import com.danubetech.btc.connection.BitcoinConnection;
+import com.danubetech.btc.connection.Network;
 import com.danubetech.btc.connection.records.Block;
 import com.danubetech.btc.connection.records.Tx;
 import com.danubetech.btc.connection.records.TxIn;
@@ -31,14 +32,21 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 
 	private final URI apiEndpointBase;
 
-	private EsploraElectrsRESTBitcoinConnection(URI apiEndpointBase) {
+	private EsploraElectrsRESTBitcoinConnection(Network network, URI apiEndpointBase) {
+		super(network);
 		if (log.isDebugEnabled()) log.debug("Creating EsploraElectrsRESTBitcoinConnection: " + apiEndpointBase);
 		this.apiEndpointBase = apiEndpointBase;
 	}
 
-	public static EsploraElectrsRESTBitcoinConnection create(URI apiEndpointBase) {
+	public static EsploraElectrsRESTBitcoinConnection create(Network network, URI apiEndpointBase) {
 		if (log.isDebugEnabled()) log.debug("Creating EsploraElectrsRESTBitcoinConnection: " + apiEndpointBase);
-		return new EsploraElectrsRESTBitcoinConnection(apiEndpointBase);
+		return new EsploraElectrsRESTBitcoinConnection(network, apiEndpointBase);
+	}
+
+	@Override
+	public Map<String, Object> getMetadata() {
+		return Map.of(
+				"apiEndpointBase", "" + this.getApiEndpointBase());
 	}
 
 	@Override
@@ -80,12 +88,6 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		URI apiEndpoint = URI.create(this.apiEndpointBase + "tx");
 		writeBytes(apiEndpoint, rawTransaction);
 		if (log.isDebugEnabled()) log.debug("broadcastRawTransaction: {}", Hex.encodeHexString(rawTransaction));
-	}
-
-	@Override
-	public Map<String, Object> getMetadata() {
-		return Map.of(
-				"apiEndpointBase", "" + this.getApiEndpointBase());
 	}
 
 	/*

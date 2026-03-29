@@ -8,6 +8,9 @@ import java.util.Map;
 
 public interface BitcoinConnection {
 
+    Network getNetwork();
+    Map<String, Object> getMetadata();
+
     Block getBlockByBlockHeight(Integer blockHeight);
     Tx getTransactionById(String txid);
     Block getBlockByTargetTime(Long targetTime);
@@ -15,5 +18,4 @@ public interface BitcoinConnection {
     List<Tx> getAddressTransactions(String address);
     Block getBlockByTransaction(Tx tx);
     void broadcastRawTransaction(byte[] rawTransaction);
-    Map<String, Object> getMetadata();
 }

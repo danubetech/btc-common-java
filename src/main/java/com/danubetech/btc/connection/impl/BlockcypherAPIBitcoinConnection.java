@@ -1,25 +1,20 @@
 package com.danubetech.btc.connection.impl;
 
 import com.danubetech.btc.connection.BitcoinConnection;
+import com.danubetech.btc.connection.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 public class BlockcypherAPIBitcoinConnection extends AbstractBitcoinConnection implements BitcoinConnection {
 
 	private static final Logger log = LoggerFactory.getLogger(BlockcypherAPIBitcoinConnection.class);
 
-	private BlockcypherAPIBitcoinConnection() {
+	private BlockcypherAPIBitcoinConnection(Network network) {
+		super(network);
 		if (log.isDebugEnabled()) log.debug("Creating BlockcypherAPIBitcoinConnection");
 	}
 
-	public static BlockcypherAPIBitcoinConnection create() {
-		return new BlockcypherAPIBitcoinConnection();
-	}
-
-	@Override
-	public Map<String, Object> getMetadata() {
-		return Map.of();
+	public static BlockcypherAPIBitcoinConnection create(Network network) {
+		return new BlockcypherAPIBitcoinConnection(network);
 	}
 }

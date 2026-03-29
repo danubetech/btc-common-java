@@ -19,14 +19,21 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 
 	private final BitcoinJSONRPCClient bitcoindRpcClient;
 
-	private BitcoindRPCBitcoinConnection(BitcoinJSONRPCClient bitcoindRpcClient) {
+	private BitcoindRPCBitcoinConnection(Network network, BitcoinJSONRPCClient bitcoindRpcClient) {
+		super(network);
 		if (log.isDebugEnabled()) log.debug("Creating BitcoindRPCBitcoinConnection: " + bitcoindRpcClient);
 		this.bitcoindRpcClient = bitcoindRpcClient;
 	}
 
-	public static BitcoindRPCBitcoinConnection create(URL rpcUrl) {
+	public static BitcoindRPCBitcoinConnection create(Network network, URL rpcUrl) {
 		if (log.isDebugEnabled()) log.debug("Creating BitcoindRPCBitcoinConnection: " + rpcUrl);
-		return new BitcoindRPCBitcoinConnection(new BitcoinJSONRPCClient(rpcUrl));
+		return new BitcoindRPCBitcoinConnection(network, new BitcoinJSONRPCClient(rpcUrl));
+	}
+
+	@Override
+	public Map<String, Object> getMetadata() {
+		return Map.of(
+				"rpcURL", this.getBitcoinJsonRpcClient().rpcURL);
 	}
 
 	@Override
@@ -77,12 +84,6 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 		}
 		if (log.isDebugEnabled()) log.debug("getBlockByMinConfirmations for {}: {}", minConfirmations, block);
 		return block;
-	}
-
-	@Override
-	public Map<String, Object> getMetadata() {
-		return Map.of(
-				"rpcURL", this.getBitcoinJsonRpcClient().rpcURL);
 	}
 
 	/*

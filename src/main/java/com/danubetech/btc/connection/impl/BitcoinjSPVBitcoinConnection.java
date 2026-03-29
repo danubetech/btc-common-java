@@ -15,14 +15,15 @@ public class BitcoinjSPVBitcoinConnection extends AbstractBitcoinConnection impl
 
 	private final WalletAppKit walletAppKit;
 
-	private BitcoinjSPVBitcoinConnection(WalletAppKit walletAppKit) {
+	private BitcoinjSPVBitcoinConnection(Network network, WalletAppKit walletAppKit) {
+		super(network);
 		if (log.isDebugEnabled()) log.debug("Creating BitcoindRPCBitcoinConnection: " + walletAppKit);
 		this.walletAppKit = walletAppKit;
 	}
 
 	public static BitcoinjSPVBitcoinConnection create(Network network) {
 		if (log.isDebugEnabled()) log.debug("Creating BitcoindRPCBitcoinConnection: " + network);
-		return new BitcoinjSPVBitcoinConnection(WalletAppKit.launch(network.toBitcoinjNetwork(), new File("."), network.name()));
+		return new BitcoinjSPVBitcoinConnection(network, WalletAppKit.launch(network.toBitcoinjNetwork(), new File("."), network.name()));
 	}
 
 	@Override

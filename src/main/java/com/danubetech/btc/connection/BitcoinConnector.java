@@ -27,10 +27,10 @@ public class BitcoinConnector {
 	public static BitcoinConnector create() {
 		return create(
 				Map.of(
-						Network.bitcoin, BitcoindRPCBitcoinConnection.create(BitcoinJSONRPCClient.DEFAULT_JSONRPC_URL),
-						Network.regtest, BitcoindRPCBitcoinConnection.create(BitcoinJSONRPCClient.DEFAULT_JSONRPC_REGTEST_URL),
-						Network.testnet3, BitcoindRPCBitcoinConnection.create(BitcoinJSONRPCClient.DEFAULT_JSONRPC_TESTNET_URL),
-						Network.testnet4, BitcoindRPCBitcoinConnection.create(BitcoinJSONRPCClient.DEFAULT_JSONRPC_TESTNET_URL)),
+						Network.bitcoin, BitcoindRPCBitcoinConnection.create(Network.bitcoin, BitcoinJSONRPCClient.DEFAULT_JSONRPC_URL),
+						Network.regtest, BitcoindRPCBitcoinConnection.create(Network.regtest, BitcoinJSONRPCClient.DEFAULT_JSONRPC_REGTEST_URL),
+						Network.testnet3, BitcoindRPCBitcoinConnection.create(Network.testnet3, BitcoinJSONRPCClient.DEFAULT_JSONRPC_TESTNET_URL),
+						Network.testnet4, BitcoindRPCBitcoinConnection.create(Network.testnet4, BitcoinJSONRPCClient.DEFAULT_JSONRPC_TESTNET_URL)),
 				Map.of(
 						Network.bitcoin, "6fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000",
 						Network.signet, "f61eee3b63a380a477a063af32b2bbc97c9ff9f01f2c4225e973988108000000",

@@ -1,6 +1,7 @@
 package com.danubetech.btc.connection.impl;
 
 import com.danubetech.btc.connection.BitcoinConnection;
+import com.danubetech.btc.connection.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wf.bitcoin.javabitcoindrpcclient.BitcoinJSONRPCClient;
@@ -14,14 +15,15 @@ public class BTCDRPCBitcoinConnection extends AbstractBitcoinConnection implemen
 
 	private final BitcoinJSONRPCClient bitcoindRpcClient;
 
-	private BTCDRPCBitcoinConnection(BitcoinJSONRPCClient bitcoindRpcClient) {
+	private BTCDRPCBitcoinConnection(Network network, BitcoinJSONRPCClient bitcoindRpcClient) {
+		super(network);
 		if (log.isDebugEnabled()) log.debug("Creating BTCDRPCBitcoinConnection: " + bitcoindRpcClient);
 		this.bitcoindRpcClient = bitcoindRpcClient;
 	}
 
-	public static BTCDRPCBitcoinConnection create(URL rpcUrl) {
+	public static BTCDRPCBitcoinConnection create(Network network, URL rpcUrl) {
 		if (log.isDebugEnabled()) log.debug("Creating BTCDRPCBitcoinConnection: " + rpcUrl);
-		return new BTCDRPCBitcoinConnection(new BitcoinJSONRPCClient(rpcUrl));
+		return new BTCDRPCBitcoinConnection(network, new BitcoinJSONRPCClient(rpcUrl));
 	}
 
 	@Override

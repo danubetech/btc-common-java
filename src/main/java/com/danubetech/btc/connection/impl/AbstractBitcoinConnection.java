@@ -1,12 +1,31 @@
 package com.danubetech.btc.connection.impl;
 
 import com.danubetech.btc.connection.BitcoinConnection;
+import com.danubetech.btc.connection.Network;
 import com.danubetech.btc.connection.records.Block;
 import com.danubetech.btc.connection.records.Tx;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractBitcoinConnection implements BitcoinConnection {
+
+    private final Network network;
+
+    protected AbstractBitcoinConnection(Network network) {
+        this.network = network;
+    }
+
+    @Override
+    public final Network getNetwork() {
+        return this.network;
+    }
+
+    @Override
+    public Map<String, Object> getMetadata() {
+        return Collections.emptyMap();
+    }
 
     @Override
     public Block getBlockByBlockHeight(Integer blockHeight) {

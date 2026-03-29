@@ -1,0 +1,25 @@
+name: Maven release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Major, Minor or Patch release'
+        type: choice
+        required: true
+        default: 'minor'
+        options:
+          - "major"
+          - "minor"
+          - "patch"
+
+jobs:
+  maven-release:
+    uses: danubetech/workflows/.github/workflows/maven-release.yml@main
+    with:
+      RELEASE_TYPE: ${{ github.event.inputs.release_type }}
+    secrets:
+      VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+      CI_SECRET_READER_PERIODIC_TOKEN: ${{ secrets.CI_SECRET_READER_PERIODIC_TOKEN }}
+      VAULTCA: ${{ secrets.VAULTCA }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

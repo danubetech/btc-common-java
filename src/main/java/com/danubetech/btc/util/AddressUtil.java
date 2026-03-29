@@ -8,9 +8,13 @@ import java.net.URI;
 
 public class AddressUtil {
 
-    public static String bitcoinUriToAddress(URI addressUri) throws BitcoinURIParseException {
+    public static Address bitcoinUriToBitcoinjAddress(URI addressUri) throws BitcoinURIParseException {
         BitcoinURI bitcoinURI = addressUri == null ? null : BitcoinURI.of(addressUri.toString());
-        Address address = bitcoinURI == null ? null : bitcoinURI.getAddress();
+        return bitcoinURI == null ? null : bitcoinURI.getAddress();
+    }
+
+    public static String bitcoinUriToAddressString(URI addressUri) throws BitcoinURIParseException {
+        Address address = bitcoinUriToBitcoinjAddress(addressUri);
         return address == null ? null : address.toString();
     }
 }

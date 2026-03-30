@@ -101,7 +101,7 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 		}
 		wf.bitcoin.javabitcoindrpcclient.BitcoindRpcClient.RawTransaction bitcoinRawTransaction = bitcoinJSONRPCClient.getRawTransaction(txId);
 		List<TxIn> txIns = bitcoinRawTransaction.vIn().stream().map(BitcoindRPCBitcoinConnection::txInFromBitcoinIn).toList();
-		List<TxOut> txOuts = bitcoinRawTransaction.vOut().stream().map(BitcoindRPCBitcoinConnection::txOutFromBitcoinOut).toList();
+		List<TxOut> txOuts = bitcoinRawTransaction.vOut().stream().map(BitcoindRPCBitcoinConnection::txOutFromBitcoinOut).map(txOut -> txOut.txId(txId)).toList();
 		return new Tx(txId, txIns, txOuts);
 	}
 
@@ -117,7 +117,7 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 		String scriptPubKeyType = out.scriptPubKey().type();
 		String scriptPubKeyAddress = out.scriptPubKey().mapStr("address");
 		Long value = out.value().longValue();
-		return new TxOut(scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
+		return new TxOut(null, scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
 	}
 
 	/*

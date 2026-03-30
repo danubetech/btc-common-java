@@ -123,7 +123,7 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 	private static Tx txFromMap(Map<String, Object> map) {
 		String txId = (String) map.get("txid");
 		List<TxIn> txIns = ((List<Map<String, Object>>) map.get("vin")).stream().map(EsploraElectrsRESTBitcoinConnection::txInFromMap).toList();
-		List<TxOut> txOuts = ((List<Map<String, Object>>) map.get("vout")).stream().map(EsploraElectrsRESTBitcoinConnection::txOutFromMap).toList();
+		List<TxOut> txOuts = ((List<Map<String, Object>>) map.get("vout")).stream().map(EsploraElectrsRESTBitcoinConnection::txOutFromMap).map(txOut -> txOut.txId(txId)).toList();
 		return new Tx(txId, txIns, txOuts);
 	}
 
@@ -139,7 +139,7 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		String scriptPubKeyType = (String) map.get("scriptpubkey_type");
 		String scriptPubKeyAddress = (String) map.get("scriptpubkey_address");
 		Long value = ((Number) map.get("value")).longValue();
-		return new TxOut(scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
+		return new TxOut(null, scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
 	}
 
 	private static String readString(URI uri) {

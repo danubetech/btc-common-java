@@ -18,6 +18,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -54,17 +55,26 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		URI apiEndpoint1 = URI.create(this.apiEndpointBase + "block-height/" + blockHeight);
 		Map<String, Object> response1 = readObject(apiEndpoint1);
 		URI apiEndpoint2 = URI.create(this.apiEndpointBase + "block/" + response1.get("height") + "/txs");
-		List<Object> response2 = readArray(apiEndpoint2);
+		List<Map<String, Object>> response2 = readArray(apiEndpoint2);
 		Integer responseBlockHeight = ((Number) response1.get("height")).intValue();
 		String responseHash = (String) response1.get("id");
 		throw new RuntimeException("Not implemented");
 	}
 
 	@Override
+	public Tx getTransactionById(String txid) {
+		URI apiEndpoint = URI.create(this.apiEndpointBase + "tx/" + txid);
+		Map<String, Object> response = readObject(apiEndpoint);
+		Tx tx = EsploraElectrsRESTBitcoinConnection.txFromMap(response);
+		if (log.isDebugEnabled()) log.debug("getTransactionById for {}: {}", txid, tx);
+		return tx;
+	}
+
+	@Override
 	public List<Tx> getAddressTransactions(String address) {
 		URI apiEndpoint = URI.create(this.apiEndpointBase + "address/" + address + "/txs");
-		List<Object> response = readArray(apiEndpoint);
-		List<Tx> txs = response.stream().map(Map.class::cast).map(EsploraElectrsRESTBitcoinConnection::txFromMap).toList();
+		List<Map<String, Object>> response = readArray(apiEndpoint);
+		List<Tx> txs = response.stream().map(EsploraElectrsRESTBitcoinConnection::txFromMap).toList();
 		if (log.isDebugEnabled()) log.debug("getAddressTransactions for {}: {}", address, txs);
 		return txs;
 	}
@@ -72,8 +82,15 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 	@Override
 	public List<TxOut> getAddressUtxos(String address) {
 		URI apiEndpoint = URI.create(this.apiEndpointBase + "address/" + address + "/utxo");
-		List<Object> response = readArray(apiEndpoint);
-		List<TxOut> txOuts = response.stream().map(Map.class::cast).map(EsploraElectrsRESTBitcoinConnection::txOutFromMap).toList();
+		List<Map<String, Object>> response = readArray(apiEndpoint);
+		List<TxOut> txOuts = new ArrayList<>();
+		for (Map<String, Object> responseEntry : response) {
+			String txId = (String) responseEntry.get("txid");
+			int vout = ((Number) responseEntry.get("vout")).intValue();
+			Tx tx = this.getTransactionById(txId);
+			TxOut txOut = tx.txOuts().get(vout);
+			txOuts.add(txOut);
+		}
 		if (log.isDebugEnabled()) log.debug("getAddressUtxos for {}: {}", address, txOuts);
 		return txOuts;
 	}
@@ -117,10 +134,12 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 	}
 
 	private static TxOut txOutFromMap(Map<String, Object> map) {
-		String txId = (String) map.get("txid");
+		String scriptPubKey = (String) map.get("scriptpubkey");
+		String scriptPubKeyAsm = (String) map.get("scriptpubkey_asm");
+		String scriptPubKeyType = (String) map.get("scriptpubkey_type");
 		String scriptPubKeyAddress = (String) map.get("scriptpubkey_address");
-		String asm = (String) map.get("scriptpubkey_asm");
-		return new TxOut(txId, scriptPubKeyAddress, asm);
+		Long value = ((Number) map.get("value")).longValue();
+		return new TxOut(scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
 	}
 
 	private static String readString(URI uri) {
@@ -154,9 +173,9 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		}
 	}
 
-	private static List<Object> readArray(URI uri) {
+	private static List<Map<String, Object>> readArray(URI uri) {
 		try {
-			return (List<Object>) jsonMapper.readValue(readString(uri), List.class);
+			return (List<Map<String, Object>>) jsonMapper.readValue(readString(uri), List.class);
 		} catch (JsonProcessingException ex) {
 			throw new RuntimeException("Cannot parse array response from " + uri + "; " + ex.getMessage(), ex);
 		}

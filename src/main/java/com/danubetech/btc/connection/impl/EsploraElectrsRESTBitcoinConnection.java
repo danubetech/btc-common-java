@@ -70,6 +70,15 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 	}
 
 	@Override
+	public List<TxOut> getAddressUtxos(String address) {
+		URI apiEndpoint = URI.create(this.apiEndpointBase + "address/" + address + "/utxo");
+		List<Object> response = readArray(apiEndpoint);
+		List<TxOut> txOuts = response.stream().map(Map.class::cast).map(EsploraElectrsRESTBitcoinConnection::txOutFromMap).toList();
+		if (log.isDebugEnabled()) log.debug("getAddressUtxos for {}: {}", address, txOuts);
+		return txOuts;
+	}
+
+	@Override
 	public Block getBlockByTransaction(Tx tx) {
 		URI apiEndpoint = URI.create(this.apiEndpointBase + "tx/" + tx.txId());
 		Map<String, Object> response = readObject(apiEndpoint);

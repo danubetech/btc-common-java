@@ -4,6 +4,7 @@ import com.danubetech.btc.connection.BitcoinConnection;
 import com.danubetech.btc.connection.Network;
 import com.danubetech.btc.connection.records.Block;
 import com.danubetech.btc.connection.records.Tx;
+import com.danubetech.btc.connection.records.TxOut;
 
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +50,11 @@ public abstract class AbstractBitcoinConnection implements BitcoinConnection {
 
     @Override
     public List<Tx> getAddressTransactions(String address) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public List<TxOut> getAddressUtxos(String address) {
         throw new RuntimeException("Not implemented");
     }
 

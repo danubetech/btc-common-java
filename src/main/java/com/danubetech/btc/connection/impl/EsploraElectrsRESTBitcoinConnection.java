@@ -61,6 +61,15 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 	}
 
 	@Override
+	public Tx getTransactionById(String txid) {
+		URI apiEndpoint = URI.create(this.apiEndpointBase + "tx/" + txid);
+		Object response = readObject(apiEndpoint);
+		Tx tx = txFromMap((Map<String, Object>) response);
+		if (log.isDebugEnabled()) log.debug("getTransactionById for {}: {}", txid, tx);
+		return tx;
+	}
+
+	@Override
 	public List<Tx> getAddressTransactions(String address) {
 		URI apiEndpoint = URI.create(this.apiEndpointBase + "address/" + address + "/txs");
 		List<Object> response = readArray(apiEndpoint);

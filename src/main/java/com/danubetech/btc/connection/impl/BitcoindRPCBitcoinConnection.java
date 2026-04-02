@@ -106,9 +106,9 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 	}
 
 	private static TxIn txInFromBitcoinIn(wf.bitcoin.javabitcoindrpcclient.BitcoindRpcClient.RawTransaction.In in) {
-        var txId = in.txid();
-		Integer vout = txId == null ? null : in.getTransactionOutput().n();
-		return new TxIn(txId, vout);
+        String prevTxId = in.txid();
+		Integer prevTxOutIndex = prevTxId == null ? null : in.getTransactionOutput().n();
+		return new TxIn(null, null, prevTxId, prevTxOutIndex);
 	}
 
 	private static TxOut txOutFromBitcoinOut(wf.bitcoin.javabitcoindrpcclient.BitcoindRpcClient.RawTransaction.Out out) {
@@ -117,7 +117,7 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 		String scriptPubKeyType = out.scriptPubKey().type();
 		String scriptPubKeyAddress = out.scriptPubKey().mapStr("address");
 		Long value = out.value().longValue();
-		return new TxOut(null, scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
+		return new TxOut(null, null, scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
 	}
 
 	/*

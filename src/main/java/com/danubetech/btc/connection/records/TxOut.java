@@ -5,6 +5,7 @@ import org.apache.commons.codec.binary.Hex;
 
 public record TxOut(
         String txId,
+        Integer txOutIndex,
         String scriptPubKey,
         String scriptPubKeyAsm,
         String scriptPubKeyType,
@@ -12,7 +13,11 @@ public record TxOut(
         Long value) {
 
     public TxOut txId(String txId) {
-        return new TxOut(txId, scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
+        return new TxOut(txId, txOutIndex, scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
+    }
+
+    public TxOut txOutIndex(Integer txOutIndex) {
+        return new TxOut(txId, txOutIndex, scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
     }
 
     public byte[] scriptBytes() {

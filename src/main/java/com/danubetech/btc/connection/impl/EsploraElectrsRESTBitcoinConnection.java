@@ -123,14 +123,16 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 	private static Tx txFromMap(Map<String, Object> map) {
 		String txId = (String) map.get("txid");
 		List<TxIn> txIns = ((List<Map<String, Object>>) map.get("vin")).stream().map(EsploraElectrsRESTBitcoinConnection::txInFromMap).toList();
-		List<TxOut> txOuts = ((List<Map<String, Object>>) map.get("vout")).stream().map(EsploraElectrsRESTBitcoinConnection::txOutFromMap).map(txOut -> txOut.txId(txId)).toList();
+		List<TxOut> txOuts = ((List<Map<String, Object>>) map.get("vout")).stream().map(EsploraElectrsRESTBitcoinConnection::txOutFromMap).toList();
+		for (int i=0; i<txIns.size(); i++) txIns.get(0).txId(txId).txInIndex(i);
+		for (int i=0; i<txOuts.size(); i++) txOuts.get(0).txId(txId).txOutIndex(i);
 		return new Tx(txId, txIns, txOuts);
 	}
 
 	private static TxIn txInFromMap(Map<String, Object> map) {
-		String txId = (String) map.get("txid");
-		Integer vout = ((Number) map.get("vout")).intValue();
-		return new TxIn(txId, vout);
+		String prevTxId = (String) map.get("txid");
+		Integer prevTxOutIndex = ((Number) map.get("vout")).intValue();
+		return new TxIn(null, null, prevTxId, prevTxOutIndex);
 	}
 
 	private static TxOut txOutFromMap(Map<String, Object> map) {
@@ -139,7 +141,7 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		String scriptPubKeyType = (String) map.get("scriptpubkey_type");
 		String scriptPubKeyAddress = (String) map.get("scriptpubkey_address");
 		Long value = ((Number) map.get("value")).longValue();
-		return new TxOut(null, scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
+		return new TxOut(null, null, scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
 	}
 
 	private static String readString(URI uri) {

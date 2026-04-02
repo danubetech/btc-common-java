@@ -146,25 +146,23 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 
 	private static String readString(URI uri) {
 		HttpURLConnection connection;
-		StringBuilder buffer = new StringBuilder();
+		StringBuilder inputBuffer = new StringBuilder();
 		try {
 			connection = (HttpURLConnection) uri.toURL().openConnection();
 			int httpStatus = connection.getResponseCode();
 			if (httpStatus != HttpURLConnection.HTTP_OK) throw new IOException("Unexpected HTTP status: " + httpStatus);
 			try (InputStream inputStream = connection.getInputStream()) {
 				if (inputStream == null) throw new IOException("No input stream");
-				if (connection.getInputStream() != null) {
-					BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-					String inputLine;
-					while ((inputLine = in.readLine()) != null) buffer.append(inputLine);
-					in.close();
-				}
+				BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+				String inputLine;
+				while ((inputLine = in.readLine()) != null) inputBuffer.append(inputLine);
+				in.close();
 			}
 		} catch (IOException ex) {
 			throw new RuntimeException("Cannot read from " + uri + "; " + ex.getMessage(), ex);
 		}
-		if (log.isDebugEnabled()) log.debug("Read response from " + uri + ": " + buffer);
-		return buffer.toString();
+		if (log.isDebugEnabled()) log.debug("Read response from " + uri + ": " + inputBuffer);
+		return inputBuffer.toString();
     }
 
 	private static Map<String, Object> readObject(URI uri) {
@@ -194,7 +192,18 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 				outputStream.write(bytesHex, 0, bytesHex.length);
 			}
 			int httpStatus = connection.getResponseCode();
-			if (httpStatus != HttpURLConnection.HTTP_OK) throw new IOException("Unexpected HTTP status: " + httpStatus);
+			if (httpStatus != HttpURLConnection.HTTP_OK) {
+				StringBuilder errorBuffer = new StringBuilder();
+				try (InputStream errorStream = connection.getErrorStream()) {
+					if (errorStream != null) {
+						BufferedReader in = new BufferedReader(new InputStreamReader(errorStream));
+						String inputLine;
+						while ((inputLine = in.readLine()) != null) errorBuffer.append(inputLine);
+						in.close();
+					}
+				}
+				throw new IOException("Unexpected HTTP status: " + httpStatus + " (" + errorBuffer + ")");
+			}
 			connection.disconnect();
 		} catch (IOException ex) {
 			throw new RuntimeException("Cannot read from " + uri + "; " + ex.getMessage(), ex);

@@ -122,10 +122,10 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 
 	private static Tx txFromMap(Map<String, Object> map) {
 		String txId = (String) map.get("txid");
-		List<TxIn> txIns = ((List<Map<String, Object>>) map.get("vin")).stream().map(EsploraElectrsRESTBitcoinConnection::txInFromMap).toList();
-		List<TxOut> txOuts = ((List<Map<String, Object>>) map.get("vout")).stream().map(EsploraElectrsRESTBitcoinConnection::txOutFromMap).toList();
-		for (int i=0; i<txIns.size(); i++) txIns.get(0).txId(txId).txInIndex(i);
-		for (int i=0; i<txOuts.size(); i++) txOuts.get(0).txId(txId).txOutIndex(i);
+		List<TxIn> txIns = new ArrayList<>(((List<Map<String, Object>>) map.get("vin")).stream().map(EsploraElectrsRESTBitcoinConnection::txInFromMap).toList());
+		List<TxOut> txOuts = new ArrayList<>(((List<Map<String, Object>>) map.get("vout")).stream().map(EsploraElectrsRESTBitcoinConnection::txOutFromMap).toList());
+		for (int i=0; i<txIns.size(); i++) txIns.set(i, txIns.get(i).txId(txId).txInIndex(i));
+		for (int i=0; i<txOuts.size(); i++) txOuts.set(i, txOuts.get(i).txId(txId).txOutIndex(i));
 		return new Tx(txId, txIns, txOuts);
 	}
 

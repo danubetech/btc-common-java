@@ -20,11 +20,19 @@ public record TxOut(
         return new TxOut(txId, txOutIndex, scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
     }
 
+    public byte[] txIdBytes() {
+        try {
+            return Hex.decodeHex(txId);
+        } catch (DecoderException ex) {
+            throw new IllegalStateException("Cannot hex-decode txId: " + txId + ": " + ex.getMessage(), ex);
+        }
+    }
+
     public byte[] scriptBytes() {
         try {
             return Hex.decodeHex(scriptPubKey);
         } catch (DecoderException ex) {
-            throw new IllegalStateException("Cannot hex-decode script: " + scriptPubKey + ": " + ex.getMessage(), ex);
+            throw new IllegalStateException("Cannot hex-decode scriptPubKey: " + scriptPubKey + ": " + ex.getMessage(), ex);
         }
     }
 }

@@ -56,7 +56,7 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		Map<String, Object> response1 = readObject(apiEndpoint1);
 		URI apiEndpoint2 = URI.create(this.apiEndpointBase + "block/" + response1.get("height") + "/txs");
 		List<Map<String, Object>> response2 = readArray(apiEndpoint2);
-		Integer responseBlockHeight = ((Number) response1.get("height")).intValue();
+		Integer responseBlockHeight = response1.containsKey("height") ? ((Number) response1.get("height")).intValue() : null;
 		String responseHash = (String) response1.get("id");
 		throw new RuntimeException("Not implemented");
 	}
@@ -86,7 +86,7 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		List<TxOut> txOuts = new ArrayList<>();
 		for (Map<String, Object> responseEntry : response) {
 			String txId = (String) responseEntry.get("txid");
-			int vout = ((Number) responseEntry.get("vout")).intValue();
+			int vout = responseEntry.containsKey("vout") ? ((Number) responseEntry.get("vout")).intValue() : null;
 			Tx tx = this.getTransactionById(txId);
 			TxOut txOut = tx.txOuts().get(vout);
 			txOuts.add(txOut);
@@ -100,7 +100,7 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		URI apiEndpoint = URI.create(this.apiEndpointBase + "tx/" + tx.txId());
 		Map<String, Object> response = readObject(apiEndpoint);
 		Map<String, Object> status = (Map<String, Object>) response.get("status");
-		Integer blockHeight = status == null ? null : ((Number) status.get("block_height")).intValue();
+		Integer blockHeight = status == null ? null : (status.containsKey("block_height") ? ((Number) status.get("block_height")).intValue() : null);
 		String blockHash = status == null ? null : (String) status.get("block_hash");
 		Long blockTime = status == null ? null : ((Number) status.get("block_time")).longValue();
 		Integer confirmations = status == null ? null : (((Boolean) status.get("confirmed")) ? 1 : 0);
@@ -131,7 +131,7 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 
 	private static TxIn txInFromMap(Map<String, Object> map) {
 		String prevTxId = (String) map.get("txid");
-		Integer prevTxOutIndex = ((Number) map.get("vout")).intValue();
+		Integer prevTxOutIndex = map.containsKey ("vout") ? ((Number) map.get("vout")).intValue() : null;
 		return new TxIn(null, null, prevTxId, prevTxOutIndex);
 	}
 

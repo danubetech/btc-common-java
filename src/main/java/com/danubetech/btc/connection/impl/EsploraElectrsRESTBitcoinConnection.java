@@ -102,7 +102,7 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		Map<String, Object> status = (Map<String, Object>) response.get("status");
 		Integer blockHeight = status == null ? null : (status.containsKey("block_height") ? ((Number) status.get("block_height")).intValue() : null);
 		String blockHash = status == null ? null : (String) status.get("block_hash");
-		Long blockTime = status == null ? null : ((Number) status.get("block_time")).longValue();
+		Long blockTime = status == null ? null : (status.containsKey("block_time") ? ((Number) status.get("block_time")).longValue() : null);
 		Integer confirmations = status == null ? null : (((Boolean) status.get("confirmed")) ? 1 : 0);
 		Block block = new Block(blockHeight, blockHash, blockTime, confirmations);
 		if (log.isDebugEnabled()) log.debug("getBlockByTransaction for {}: {}", tx, block);
@@ -140,7 +140,7 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		String scriptPubKeyAsm = (String) map.get("scriptpubkey_asm");
 		String scriptPubKeyType = (String) map.get("scriptpubkey_type");
 		String scriptPubKeyAddress = (String) map.get("scriptpubkey_address");
-		Long value = ((Number) map.get("value")).longValue();
+		Long value = (map.containsKey("value") ? ((Number) map.get("value")).longValue() : null);
 		return new TxOut(null, null, scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
 	}
 

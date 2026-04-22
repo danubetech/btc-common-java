@@ -116,7 +116,7 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 		String scriptPubKeyAsm = out.scriptPubKey().asm();
 		String scriptPubKeyType = out.scriptPubKey().type();
 		String scriptPubKeyAddress = out.scriptPubKey().mapStr("address");
-		Long value = out.value().longValue();
+		Long value = out.value() == null ? null : out.value().longValue();
 		return new TxOut(null, null, scriptPubKey, scriptPubKeyAsm, scriptPubKeyType, scriptPubKeyAddress, value);
 	}
 

@@ -47,7 +47,7 @@ public class BitcoinConnector {
 		return bitcoinConnection;
 	}
 
-	public String getGensisHash(Network network) {
+	public String getGenesisHash(Network network) {
 		String genesisHash = this.genesisHashes.get(network);
 		if (genesisHash == null) throw new IllegalArgumentException("Unknown network for genesisHash: " + network);
 		if (log.isDebugEnabled()) log.debug("genesisHash for " + network + ": " + genesisHash);

@@ -64,7 +64,7 @@ public abstract class AbstractBitcoinConnection implements BitcoinConnection {
     }
 
     @Override
-    public void broadcastRawTransaction(byte[] rawTransaction) {
+    public String broadcastRawTransaction(byte[] rawTransaction) {
         throw new RuntimeException("Not implemented");
     }
 }

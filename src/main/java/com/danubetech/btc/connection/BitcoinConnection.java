@@ -19,5 +19,5 @@ public interface BitcoinConnection {
     List<Tx> getAddressTransactions(String address);
     List<TxOut> getAddressUtxos(String address);
     Block getBlockByTransaction(Tx tx);
-    void broadcastRawTransaction(byte[] rawTransaction);
+    String broadcastRawTransaction(byte[] rawTransaction);
 }

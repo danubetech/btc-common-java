@@ -110,10 +110,11 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 	}
 
 	@Override
-	public void broadcastRawTransaction(byte[] rawTransaction) {
+	public String broadcastRawTransaction(byte[] rawTransaction) {
 		URI apiEndpoint = URI.create(this.apiEndpointBase + "tx");
-		writeBytes(apiEndpoint, rawTransaction);
-		if (log.isDebugEnabled()) log.debug("broadcastRawTransaction: {}", Hex.encodeHexString(rawTransaction));
+		String response = writeBytesReadString(apiEndpoint, rawTransaction);
+		if (log.isDebugEnabled()) log.debug("broadcastRawTransaction for {}: {}", Hex.encodeHexString(rawTransaction), response);
+		return response;
 	}
 
 	/*
@@ -150,7 +151,21 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		try {
 			connection = (HttpURLConnection) uri.toURL().openConnection();
 			int httpStatus = connection.getResponseCode();
-			if (httpStatus != HttpURLConnection.HTTP_OK) throw new IOException("Unexpected HTTP status: " + httpStatus);
+			connection.setRequestMethod("GET");
+			connection.setDoInput(true);
+			connection.setDoOutput(false);
+			if (httpStatus != HttpURLConnection.HTTP_OK) {
+				StringBuilder errorBuffer = new StringBuilder();
+				try (InputStream errorStream = connection.getErrorStream()) {
+					if (errorStream != null) {
+						BufferedReader in = new BufferedReader(new InputStreamReader(errorStream));
+						String inputLine;
+						while ((inputLine = in.readLine()) != null) errorBuffer.append(inputLine);
+						in.close();
+					}
+				}
+				throw new IOException("Unexpected HTTP status: " + httpStatus + " (" + errorBuffer + ")");
+			}
 			try (InputStream inputStream = connection.getInputStream()) {
 				if (inputStream == null) throw new IOException("No input stream");
 				BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
@@ -181,11 +196,13 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		}
 	}
 
-	private static void writeBytes(URI uri, byte[] bytes) {
-		HttpURLConnection connection;
+	private static String writeBytesReadString(URI uri, byte[] bytes) {
+		HttpURLConnection connection = null;
+		StringBuilder inputBuffer = new StringBuilder();
 		try {
 			connection = (HttpURLConnection) uri.toURL().openConnection();
 			connection.setRequestMethod("POST");
+			connection.setDoInput(true);
 			connection.setDoOutput(true);
 			try (OutputStream outputStream = connection.getOutputStream()) {
 				byte[] bytesHex = Hex.encodeHexString(bytes).getBytes(StandardCharsets.UTF_8);
@@ -204,11 +221,36 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 				}
 				throw new IOException("Unexpected HTTP status: " + httpStatus + " (" + errorBuffer + ")");
 			}
-			connection.disconnect();
+			try (InputStream inputStream = connection.getInputStream()) {
+				if (inputStream == null) throw new IOException("No input stream");
+				BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+				String inputLine;
+				while ((inputLine = in.readLine()) != null) inputBuffer.append(inputLine);
+				in.close();
+			}
 		} catch (IOException ex) {
 			throw new RuntimeException("Cannot read from " + uri + "; " + ex.getMessage(), ex);
+		} finally {
+			if (connection != null) connection.disconnect();
 		}
-		if (log.isDebugEnabled()) log.debug("Wrote to " + uri);
+		if (log.isDebugEnabled()) log.debug("Wrote to and read response from " + uri + ": " + inputBuffer);
+		return inputBuffer.toString();
+	}
+
+	private static Map<String, Object> writeBytesReadObject(URI uri, byte[] bytes) {
+		try {
+			return (Map<String, Object>) jsonMapper.readValue(writeBytesReadString(uri, bytes), Map.class);
+		} catch (JsonProcessingException ex) {
+			throw new RuntimeException("Cannot parse object response from " + uri + "; " + ex.getMessage(), ex);
+		}
+	}
+
+	private static List<Map<String, Object>> writeBytesReadArray(URI uri, byte[] bytes) {
+		try {
+			return (List<Map<String, Object>>) jsonMapper.readValue(writeBytesReadString(uri, bytes), List.class);
+		} catch (JsonProcessingException ex) {
+			throw new RuntimeException("Cannot parse array response from " + uri + "; " + ex.getMessage(), ex);
+		}
 	}
 
 	/*

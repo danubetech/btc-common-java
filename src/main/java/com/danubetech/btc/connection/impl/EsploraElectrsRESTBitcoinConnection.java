@@ -150,10 +150,10 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		StringBuilder inputBuffer = new StringBuilder();
 		try {
 			connection = (HttpURLConnection) uri.toURL().openConnection();
-			int httpStatus = connection.getResponseCode();
 			connection.setRequestMethod("GET");
 			connection.setDoInput(true);
 			connection.setDoOutput(false);
+			int httpStatus = connection.getResponseCode();
 			if (httpStatus != HttpURLConnection.HTTP_OK) {
 				StringBuilder errorBuffer = new StringBuilder();
 				try (InputStream errorStream = connection.getErrorStream()) {

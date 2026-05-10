@@ -112,9 +112,9 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 	@Override
 	public String broadcastRawTransaction(byte[] rawTransaction) {
 		URI apiEndpoint = URI.create(this.apiEndpointBase + "tx");
-		String response = writeBytesReadString(apiEndpoint, rawTransaction);
-		if (log.isDebugEnabled()) log.debug("broadcastRawTransaction for {}: {}", Hex.encodeHexString(rawTransaction), response);
-		return response;
+		String txId = writeBytesReadString(apiEndpoint, rawTransaction);
+		if (log.isDebugEnabled()) log.debug("broadcastRawTransaction for {}: {}", Hex.encodeHexString(rawTransaction), txId);
+		return txId;
 	}
 
 	/*

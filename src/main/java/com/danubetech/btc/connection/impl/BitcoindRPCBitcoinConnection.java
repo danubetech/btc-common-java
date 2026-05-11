@@ -92,7 +92,7 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 	 */
 
 	private static Block blockFromBitcoinBlock(wf.bitcoin.javabitcoindrpcclient.BitcoindRpcClient.Block bitcoinjBlock) {
-		return new Block(bitcoinjBlock.height(), bitcoinjBlock.hash(), bitcoinjBlock.time().getTime(), bitcoinjBlock.confirmations());
+		return new Block(bitcoinjBlock.height(), bitcoinjBlock.time().getTime(), bitcoinjBlock.hash(), bitcoinjBlock.confirmations());
 	}
 
 	private static Tx txFromBitcoinRawTransaction(BitcoinJSONRPCClient bitcoinJSONRPCClient, String txId) {

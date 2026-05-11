@@ -104,7 +104,7 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		String blockHash = status == null ? null : (String) status.get("block_hash");
 		Long blockTime = status == null ? null : (status.containsKey("block_time") ? ((Number) status.get("block_time")).longValue() : null);
 		Integer confirmations = status == null ? null : (((Boolean) status.get("confirmed")) ? 1 : 0);
-		Block block = new Block(blockHeight, blockHash, blockTime, confirmations);
+		Block block = new Block(blockHeight, blockTime, blockHash, confirmations);
 		if (log.isDebugEnabled()) log.debug("getBlockByTransaction for {}: {}", tx, block);
 		return block;
 	}

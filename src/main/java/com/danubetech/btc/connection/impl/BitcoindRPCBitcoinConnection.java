@@ -38,6 +38,14 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 	}
 
 	@Override
+	public Integer getBlockCount() {
+		BitcoinJSONRPCClient bitcoinJSONRPCClient = this.getBitcoinJsonRpcClient();
+		Integer blockCount = bitcoinJSONRPCClient.getBlockCount();
+		if (log.isDebugEnabled()) log.debug("getBlockCount: {}", blockCount);
+		return blockCount;
+	}
+
+	@Override
 	public Block getBlockByBlockHeight(Integer blockHeight) {
 		BitcoinJSONRPCClient bitcoinJSONRPCClient = this.getBitcoinJsonRpcClient();
 		wf.bitcoin.javabitcoindrpcclient.BitcoindRpcClient.Block bitcoinjBlock = bitcoinJSONRPCClient.getBlock(blockHeight);

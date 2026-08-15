@@ -12,6 +12,7 @@ public interface BitcoinConnection {
     Network getNetwork();
     Map<String, Object> getMetadata();
 
+    Integer getBlockCount();
     Block getBlockByBlockHeight(Integer blockHeight);
     Tx getTransactionById(String txid);
     Block getBlockByTargetTime(Long targetTime);

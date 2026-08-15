@@ -51,6 +51,14 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 	}
 
 	@Override
+	public Integer getBlockCount() {
+		URI apiEndpoint = URI.create(this.apiEndpointBase + "/blocks/tip/height");
+		Integer blockCount = readInteger(apiEndpoint);
+		if (log.isDebugEnabled()) log.debug("getBlockCount: {}", blockCount);
+		throw new RuntimeException("Not implemented");
+	}
+
+	@Override
 	public Block getBlockByBlockHeight(Integer blockHeight) {
 		URI apiEndpoint1 = URI.create(this.apiEndpointBase + "block-height/" + blockHeight);
 		Map<String, Object> response1 = readObject(apiEndpoint1);
@@ -179,6 +187,10 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		if (log.isDebugEnabled()) log.debug("Read response from " + uri + ": " + inputBuffer);
 		return inputBuffer.toString();
     }
+
+	private static Integer readInteger(URI uri) {
+		return Integer.parseInt(readString(uri));
+	}
 
 	private static Map<String, Object> readObject(URI uri) {
 		try {

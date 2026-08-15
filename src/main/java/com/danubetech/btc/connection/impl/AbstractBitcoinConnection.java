@@ -29,6 +29,11 @@ public abstract class AbstractBitcoinConnection implements BitcoinConnection {
     }
 
     @Override
+    public Integer getBlockCount() {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
     public Block getBlockByBlockHeight(Integer blockHeight) {
         throw new RuntimeException("Not implemented");
     }

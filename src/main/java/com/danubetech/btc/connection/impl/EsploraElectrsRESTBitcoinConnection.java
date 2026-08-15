@@ -109,10 +109,11 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 		Map<String, Object> response = readObject(apiEndpoint);
 		Map<String, Object> status = (Map<String, Object>) response.get("status");
 		Integer blockHeight = status == null ? null : (status.containsKey("block_height") ? ((Number) status.get("block_height")).intValue() : null);
-		String blockHash = status == null ? null : (String) status.get("block_hash");
 		Long blockTime = status == null ? null : (status.containsKey("block_time") ? ((Number) status.get("block_time")).longValue() : null);
-		Integer confirmations = status == null ? null : (((Boolean) status.get("confirmed")) ? 1 : 0);
-		Block block = new Block(blockHeight, blockTime, blockHash, confirmations);
+		String blockHash = status == null ? null : (String) status.get("block_hash");
+		Boolean confirmed = status == null ? null : (Boolean) status.get("confirmed");
+		Integer confirmations = null;
+		Block block = new Block(blockHeight, blockTime, blockHash, confirmed, confirmations);
 		if (log.isDebugEnabled()) log.debug("getBlockByTransaction for {}: {}", tx, block);
 		return block;
 	}

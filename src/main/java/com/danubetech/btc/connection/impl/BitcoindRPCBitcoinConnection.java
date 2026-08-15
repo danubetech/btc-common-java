@@ -18,6 +18,8 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 
 	private static final Logger log = LoggerFactory.getLogger(BitcoindRPCBitcoinConnection.class);
 
+	public static final int MIN_CONFIRMATIONS = 6;
+
 	private final BitcoinJSONRPCClient bitcoindRpcClient;
 
 	private BitcoindRPCBitcoinConnection(Network network, BitcoinJSONRPCClient bitcoindRpcClient) {
@@ -100,7 +102,12 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 	 */
 
 	private static Block blockFromBitcoinBlock(wf.bitcoin.javabitcoindrpcclient.BitcoindRpcClient.Block bitcoinjBlock) {
-		return new Block(bitcoinjBlock.height(), bitcoinjBlock.time().getTime(), bitcoinjBlock.hash(), bitcoinjBlock.confirmations());
+		Integer blockHeight = bitcoinjBlock.height();
+		Long blockTime = bitcoinjBlock.time().getTime();
+		String blockHash = bitcoinjBlock.hash();
+		Boolean confirmed = bitcoinjBlock.confirmations() >= MIN_CONFIRMATIONS;
+		Integer confirmations = bitcoinjBlock.confirmations();
+		return new Block(blockHeight, blockTime, blockHash, confirmed, confirmations);
 	}
 
 	private static Tx txFromBitcoinRawTransaction(BitcoinJSONRPCClient bitcoinJSONRPCClient, String txId) {

@@ -52,7 +52,7 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 
 	@Override
 	public Integer getBlockCount() {
-		URI apiEndpoint = URI.create(this.apiEndpointBase + "/blocks/tip/height");
+		URI apiEndpoint = URI.create(this.apiEndpointBase + "blocks/tip/height");
 		Integer blockCount = readInteger(apiEndpoint);
 		if (log.isDebugEnabled()) log.debug("getBlockCount: {}", blockCount);
 		throw new RuntimeException("Not implemented");

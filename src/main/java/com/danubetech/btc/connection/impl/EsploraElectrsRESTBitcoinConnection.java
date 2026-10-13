@@ -24,6 +24,8 @@ import java.util.Map;
 
 public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnection implements BitcoinConnection {
 
+	private static final int ASSETS_PER_PAGE = 10;
+
 	private static final Logger log = LoggerFactory.getLogger(EsploraElectrsRESTBitcoinConnection.class);
 
 	private static final JsonMapper jsonMapper = JsonMapper.builder()
@@ -82,7 +84,17 @@ public class EsploraElectrsRESTBitcoinConnection extends AbstractBitcoinConnecti
 	public List<Tx> getAddressTransactions(String address) {
 		URI apiEndpoint = URI.create(this.apiEndpointBase + "address/" + address + "/txs");
 		List<Map<String, Object>> response = readArray(apiEndpoint);
-		List<Tx> txs = response.stream().map(EsploraElectrsRESTBitcoinConnection::txFromMap).toList();
+		List<Tx> txs = new ArrayList<>(response.stream().map(EsploraElectrsRESTBitcoinConnection::txFromMap).toList());
+		List<Tx> txsCurrent = txs;
+		while (txsCurrent.size() >= ASSETS_PER_PAGE) {
+			String afterTxid = txsCurrent.get(txsCurrent.size()-1).txId();
+			URI apiEndpointAfterTxid = URI.create(apiEndpoint + "?after_txid=" + afterTxid);
+			List<Map<String, Object>> responseAfterTxid = readArray(apiEndpointAfterTxid);
+			List<Tx> txsAftertxid = responseAfterTxid.stream().map(EsploraElectrsRESTBitcoinConnection::txFromMap).toList();
+			if (! txsAftertxid.isEmpty() && txsAftertxid.get(0).txId().equals(txsCurrent.get(0).txId())) break;
+			txs.addAll(txsAftertxid);
+			txsCurrent = txsAftertxid;
+		}
 		if (log.isDebugEnabled()) log.debug("getAddressTransactions for {}: {}", address, txs);
 		return txs;
 	}
